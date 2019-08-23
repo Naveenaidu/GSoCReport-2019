@@ -1,10 +1,9 @@
-title: Boxuan Li GSoC Report
-email: liboxuanhk@gmail.com
+title: Naveen GSoC Report
+email: naveennaidu479@gmail.com
 
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jekyllrb
-github_username:  jekyll
+baseurl: "/GSoCReport" # the subpath of your site, e.g. /blog
+url: "https://naveenaidu.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
+github_username:  Naveenaidu
 
 # Build settings
 markdown: kramdown
