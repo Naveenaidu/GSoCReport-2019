@@ -1,348 +1,214 @@
 ---
 layout: report
-student: Boxuan Li 
+student: Naveen Naidu 
 organisation: coala
 organisation_link : https://coala.io
-project: Meta-review
-project_link: https://summerofcode.withgoogle.com/projects/#5188493739819008
+project: Handle Nested Programming Languages
+project_link: https://summerofcode.withgoogle.com/projects/#5842650266075136
 tarball: https://github.com/li-boxuan/GSoCReport/raw/master/li-boxuan_coala.tar.gz
 mentors: >
- [Hemang Kumar](https://github.com/hemangsk/) & [Surya Widi](https://github.com/blazeu) & [Andrew Dassonville](https://github.com/andrewda)
+ [Virresh Gupta](https://github.com/virresh) & [Saurav Singh](https://github.com/damngamerz) & [Marcos Gomez](https://github.com/margobra8)
 phase:
- - Bonding : https://gitlab.com/coala/GSoC/GSoC-2018/milestones/14
- - Phase 1 : https://gitlab.com/coala/GSoC/GSoC-2018/milestones/15
- - Phase 2 : https://gitlab.com/coala/GSoC/GSoC-2018/milestones/16
- - Phase 3 : https://gitlab.com/coala/GSoC/GSoC-2018/milestones/17
+ - Bonding : https://gitlab.com/coala/GSoC/gsoc-2019/-/milestones/24
+ - Phase 1 : https://gitlab.com/coala/GSoC/gsoc-2019/-/milestones/27
+ - Phase 2 : https://gitlab.com/coala/GSoC/gsoc-2019/-/milestones/28
+ - Phase 3 : https://gitlab.com/coala/GSoC/gsoc-2019/-/milestones/36
 bio: >
- I'm a final year student (expected graduation date: May 2019) of Computer Science at The University of Hong Kong. I participated in GSoC and worked with [coala](http://coala.io) to implement a meta-review system, which collects and tracks GitHub reactions used by coala community to generate meaningful analysis. I also improved usability of [gh-board](http://github.com/coala/gh-board), a serverless kanban board, fixing some issues and extending it to track reviews & meta-reviews.
+ I'm a final year student (expected graduation date: Aug 2020) of Computer Science at PES University - ECC Campus, India. I participated in GSoC and worked with [coala](http://coala.io) to implement the support to handle nested programming languages. I laid out and implemented the entire architecture for coala to handle most of combinations of nested languages.
+
 social:
  - GitHub:
-   - username: li-boxuan
-   - link: https://github.com/li-boxuan
+   - username: Naveenaidu
+   - link: https://github.com/Naveenaidu
  - GitLab:
-   - username: li-boxuan
-   - link: https://gitlab.com/li-boxuan
+   - username: Naveenaidu
+   - link: https://gitlab.com/Naveenaidu
  - Gitter:
-   - username: li-boxuan
-   - link: https://gitter.im/li-boxuan
+   - username: Naveenaidu
+   - link: https://gitter.im/Naveenaidu
  - LinkedIn:
-   - username: Li Boxuan 
-   - link: https://www.linkedin.com/in/li-boxuan-427510104
-email: liboxuanhk@gmail.com
-blog: http://li-boxuan.github.io/
+   - username: Naveen Naidu 
+   - link: https://www.linkedin.com/in/naveenaidu/
+email: naveennaidu479@gmail.com
+blog: https://naveenaidu.github.io/
 activity:
  - 0:
-   - repo: community
-   - link: https://github.com/coala/community/commit/2929576df9c20144aad9db8a5e326c1853375158
+   - repo: cEPs
+   - link: https://github.com/coala/cEPs/pull/188
    - details: > 
-      Set up meta_review app
+      cEP-033: Handle Nested Programming Languages
  - 1:
-   - repo: community
-   - link: https://github.com/coala/community/commit/aae015127c96b85a1cd9188199a6e4a46693d9f7
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/c42afec17773349d38b319a0c8a331f1cadaa013
    - details: >
-      Change meta-review models
+      Implement NlSection 
 
  - 2:
-   - repo: community
-   - link: https://github.com/coala/community/commit/78e1e3a542a1654982f55cde4e08bbf97ec81c3c
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/dd27757467bb3ef41b03dd076eecf60d792929a5
    - details: >
-      Implement meta-review scoring & ranking system
+      Implement NlSectionPosition
 
  - 3:
-   - repo: projects
-   - link: https://github.com/coala/projects/commit/6c83d70a8559d1368fba1d80ad412b31ada7dad3
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/8f1a37cd921c6e5370fddd669221c5f740723ff7
    - details: >
-      [Bonding Period Work] meta_review.md: Add meta review project
+      Implement Parser Base Class
 
  - 4:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/16f8e84036a9ba47d434c60400da021d90a1a740
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/5780a6345ad6e85ed5ad37ec3e11ff939b2ad4f3
    - details: >
-      [Bonding Period Work] fetch-issues.js: Build custom generator
+      Implement PyJinjaParser
 
  - 5:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/46f1ad5ce83d5d72aa95ea00703b92c2fc38b2dc
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/5b86750c193efd7c995a5bf3615cc9657c8e17a9
    - details: >
-      [Bonding Period Work] Remove TODOs in components code
+      test-requirements.txt: Add regex module
 
  - 6:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/60b8a10f123d2bec71c22c31f3e281ad9609fa07
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/6cd1bc67177f56cad57c6d7e98fcee83bb797608
    - details: >
-      [Bonding Period Work] Modernize existing React component code
+      DefaultArgumentParser.py: Add nested language mode support
 
  - 7:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/e452f41ddda6abe149442d5240675b3ae3333e6a
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/1c0035d1350af72c139d0cb95023e20ad405ee07
    - details: >
-      nav.jsx: Fix broken link on header
+      TestUtilities.py: Add PEP8TestBear, Jinja2TestBear
 
  - 8:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/77830f4146de9d4d29b539740423a0ca43ee219f
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/27fecf92474b1f5334469c29205fe501aeee04ba
    - details: >
-      Pre-fetch pull request review comments & reactions
+      NlInfoExtractor: Add NlInfoExtractor
 
  - 9:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/2a7338b3edff6d1c9f5b019ea07c28640996267a
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/71c0d041a50e704907e34e212fac5f5e0ae4e91d
    - details: >
-      package.json: Add linting on script & test
+      NlFileHandler: Add NlFileHandler
 
  - 10:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/d3c6debe198b369901166be791a9ae53f23b26a0
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/20652070886c393f8c4962c2917469c83b46415a
    - details: >
-      Get test suite working
+      NlCliParsing: Add NlCliParsing
 
  - 11:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/671f13de1999001e718df9ce5187d7abf278791d
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/04404d6785b2a56881ee5a6b56e69a3d9fae6082
    - details: >
-      Set pre-fetch time limit for pull requests
+      Implement NlCore
 
  - 12:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/91fffbbce1713a1d56276122d51cb16c7079b626
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/8f45c52ae199ad7dbd08b37c67a809243b2d06d8
    - details: >
-      Fix Travis failure
+      coala_main: Add support for nested language mode
 
  - 13:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/c33cc70bcab57a4ac13e4f352a255abc213dc874
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/42a8470e1da5861b859e98e8cd2209a709e41c77
    - details: >
-      database.js: Fix `closed` filter bug
+      ConsoleInteraction: Add support for nested language mode
 
  - 14:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/a2957290794424c6b8a0162ab49694cd771c2445
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/41114bda053d34590592230eeeccd9953f43847e
    - details: >
-      .travis.yml: Enable keep-history
+      Processing.py: Add support for nested language mode
 
  - 15:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/aca0d61832ffe1bac2b2c9d2615ea4219f68d3b6
+   - repo: coala
+   - link: https://github.com/coala/coala/pull/6066/commits/e8488e55a581d21bc4b14c800f865f44719044ba
    - details: >
-      .travis.yml: Let moban task not deploy
+      ConfigurationGathering: Add support for nested language mode
 
  - 16:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/4b82e679b83339f500d686967d3b6b843f7e1d40
-   - details: >
-      run-test.sh: Verify files exist
-
- - 17:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/0f9f4a45bfdf341c5705d7543688adea7195c5cb
-   - details: >
-      Increase test timeout threshold
-
- - 18:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/34c2e6de21ed2933d8f19cca3b6dd177ce32c86f
-   - details: >
-      login-modal.jsx: Add exception for default api url
-
- - 19:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/828be376832687373b984df38ca71c1684651aa7
-   - details: >
-      Add `meta-review in need` column
-
- - 20:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/ac8b0709b0e82963fd3d6680b37005359225effc
-   - details: >
-      Display reactions of reviews
-
- - 21:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/892b87ff808ac188166c9500d1169b1590b8d791
-   - details: >
-      dashboard.jsx: Add environment REPOSITORIES
-
- - 22:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/e791bee60bf4af32aec889211d4de63d6418d7ed
-   - details: >
-      Setup GraphQL client
-
- - 23:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/5480420793979b9ae4b53117c6d5d757f12013bb
-   - details: >
-      Use new graphql client to sync issues
-
- - 24:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/93c842bca04298c8afc2d71d167efe04d432d11f
-   - details: >
-      dashboard.jsx: Load repos automatically after login
-
- - 25:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/9eae16877612d21f3ceed99ec23a097ec32e21b3
-   - details: >
-      Add review filters functionality
-
- - 26:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/d32b25729ee1d9bc7972dce4a898a0bea9146098
-   - details: >
-      Refactor pre-fetching
-
- - 27:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/faf793a3679ab32cb4e42c8ac54f174695b6bebc
-   - details: >
-      github-graphql.js: Fix several issues
-
- - 28:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/59e9cba6ca38a8fb6396a0864ff43bf749f1d6ec
-   - details: >
-      Setup Jest configurations
-
- - 29:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/8a3c49befc2c3d2b68ed11c5f2e217cb177caf57
-   - details: >
-      reactions.jsx: Add snapshot test
-
- - 30:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/1f88cfa9c369f5b3f4bd7abafa6c15970196de80
-   - details: >
-      Add codecov
-
- - 31:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/3638063072aeea1925bab5f9565d7765bf8d4cf4
-   - details: >
-      Separate test logic
-
- - 32:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/10003d073c16c18da669b66f235c0e9abc1230f1
-   - details: >
-      netlify.toml: Verify pre-fetched files exist
-
- - 33:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/d1a7ea3ea66c7af7a51a9717f67fc635fc35cf41
-   - details: >
-      Enhance meta-review UI
-
- - 34:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/b062087825f01c1169accb646f0eaf0d1f0e7cb8
-   - details: >
-      Add reaction mutation functionality
-
- - 35:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/d4705c5332ecd8e4329f0b62f7df3c9312c35a01
-   - details: >
-      repo-kanban.jsx: Use withAuth wrapper
-
- - 36:
-   - repo: gh-board
-   - link: https://github.com/coala/gh-board/commit/d1a9bf25061800510cd9cf7d1c089900d2cbd1f1
-   - details: >
-      dashboard.jsx: Use withAuth wrapper
-
- - 37:
-   - repo: cEPs
-   - link: https://github.com/coala/cEPs/commit/e9f7587856e1c236d37e96f54a0cb4d72069776d
-   - details: >
-      cEP-0019.md: Meta-review system
-
- - 38:
    - repo: coala
-   - link: https://github.com/coala/coala/commit/dc2cc6a82f72644da55f509f8d4a50ba8fa694ba
+   - link: https://github.com/coala/coala/pull/6066/commits/5c4e058b4221ee8256881fc0d3f95f5d72ec7f1c
    - details: >
-      Linter: Add option to remove 0 number
-
- - 39:
-   - repo: coala
-   - link: https://github.com/coala/coala/commit/dfa92b64435b86b10b9a725ee32267896450e565
-   - details: >
-      Meta-review.rst: Add meta-review docs
-
- - 40:
-   - repo: coala
-   - link: https://github.com/coala/coala/pull/5704
-   - details: >
-      Newcomers_Guide.rst: Add meta-review process (pending review)
-
- - 41:
-   - repo: coala-bears
-   - link: https://github.com/coala/coala-bears/commit/2f6f58b4afa0b139aa25062c3d3fcb27df3ea0d5
-   - details: >
-      PyLintBear: Fix column number convention
-
- - 42:
-   - repo: coala-bears
-   - link: https://github.com/coala/coala-bears/commit/1f3325519a72cb98669185149b03b11c1ec25f70
-   - details: >
-      CPPLintBear: Fix line number convention
-
- - 43:
-   - repo: coala-bears
-   - link: https://github.com/coala/coala-bears/commit/705f9db98d957cc9d27e675b1d58f369feb54255
-   - details: >
-      HAMLLintBear: Fix line number convention
-
- - 44:
-   - repo: coala-bears
-   - link: https://github.com/coala/coala-bears/commit/e5df6bcac33aa06bec70bf21217972620c34e888
-   - details: >
-      WriteGoodLintBear: Fix column number convention
-
- - 45:
-   - repo: coala-bears
-   - link: https://github.com/coala/coala-bears/commit/e445c04e28e95b7f21983e9e2dd770e81838aa69
-   - details: >
-      StylintBear: Fix column number convention
-
- - 46:
-   - repo: coala-bears
-   - link: https://github.com/coala/coala-bears/commit/401fa883ffbe21b78a8a4899160592a293f3d4cd
-   - details: >
-      CheckStyleBear: Fix offset convention
+      result_action: Add support for nested language mode
 
 ---
 
-### Meta-review
+### Handle Nested Programming Languages
 
 
 #### Work Done
 
-coala [community](https://github.com/coala/community) website now has a meta-review
-[ranking list](http://coala-community.netlify.com/meta-review/). coala
-gh-board [website](https://coala-gh-board.netlify.com/)
-now has a column displaying review comments that need to be meta-reviewed. I also
-fixed many issues around [gh-board](https://github.com/coala/gh-board) repo.
-Apart from all above, I do some other contributions to the community, including
-doing reviews, and fixing several issues around coala & coala-bears repo.
+* [coala](https://github.com/coala/coala/) now has a nested language mode. It allows coala
+to lint through the files that have a combination of nested languages and provided 
+patches to the user, just like how it's done in the normal mode.
+
+* The vast majority of my project was based on laying down the architecuture to make this
+project possible. And hence, I only implemented the support for the files that have 
+`Python` and `Jinja2` as the combination. That being said, extending the support for 
+other languages is really easy.
+
+* The user can switch on nested language mode using:
+```
+coala --handle-nested --languages=python,jinja2 --files=test.py.jj2 
+--bears=PEP8Bear,Jinja2Bear,SpaceConsistencyBear
+```
+
+* The argument `--handle-nested` is used to specify that the files has a combination of
+nested languages. The argument `--languages` is to mention the languages that exists in
+the files. Note that, it is important to mention the `--languages` argument since coala
+cannot auto detect the languages present in the nested language file.
+
+* Also special care has been taken to keep the signicficant part of the core coala untounched
+by my implementation. No major changes have been done to the way coala works. This would
+help as this is still an experimental features and many changes are yet to come.
+
+* An asciinema of the working is [here](https://asciinema.org/a/263844)
 
 #### Challenges
 
-Most things went smoothly. The biggest challenge for me was that I did not have serious
-frontend experience. Before I applied for this project, I had no frontend development
-knowledge at all, while two thirds of my project was about javascript and React.
-Luckily, org admin and all my mentors were very willing to help and review my work.
-coala community always do extremely careful reviews and expect high quality of code.
-It was hard work for me, but I did learn a lot at the same time.
+* The most challenging part of the project was to come up with a proper architecuture that
+would work. I must confess that I put in more than 2 month of time before GSoC to try
+out various possibilites that might make this project a reality. I am grateful to all
+the mentors of coala who kept reviewing my various approaches even with their busy
+schedule, without their insights I would never have been able to finalise on my proposal.
+
+* Since this project deals with the core of the coala, I was pretty scared to get into the
+waters of the huge codebase. But with the constant support of mentors and as the time 
+went on, I was about to understand how the different components of coala actually 
+pieced together.
+
+* Another difficult situation that I faced was during my Third Phase of GSoC. The approach
+I planned out for the assembling of the files did not seem to work. So I was supposed
+to come with a new approach in a span of 11 days. I was pretty pissed and scared ,but
+apparently it took lesser time than i expected, this taught me not overestimate the 
+time and take things one at a time.
+
+* And last not the least was about maintaining the coverage while implementing the details.
+It took me time to soak in all the coverage, but it all turned out to be good.
+
+* The entire experience was really fun, though at times there were few hair plucking moment
+but this taught me a lot about how the architectures need to be made and how different
+components needs to be designed to keep track of scalability.
 
 #### Work to be done
 
-The ranking list on community website is very basic. It could be prettified and improved.
-As it is a ranking list, filtering, sorting & searching options could be added.
-The algorithm between that meta-review ranking system is basic: it uses naive iterative
-algorithm to calculate scores, which can be enhanced in the future.
+* I've complete almost all of the goals that I had planned out for this GSoC. But there
+are a lot's of enhancements that can be done to the way of how Nested Language mode
+can work. 
 
-There are still many issues around with gh-board. A major improvement which can be done
-is GitLab support - it currently only supports GitHub.
+The work to be done is:
+
+1. Enhance the way how parsing is done. For now it supports most of the cases, but there 
+are few edge cases that I might have missed. 
+2. Add parsers for other combination os the languages.
+3. Add support to enable nested language mode from `.coafile`
+4. For now, when we have a line with mixed language, we pass off the mixed language line 
+to a bear that can handle both the languages. This needs to be changed.
+5. A way to make coala ignore the `position markers` that are added in `NlFileHandler` to
+extract the sections after linting. The changed needs to be made in `ignore_ranges` of
+`Processing.py`. I'm guessing that we might have to change the way how `ignore_ranges`
+work.
+
 
