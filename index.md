@@ -1,6 +1,6 @@
 ---
 layout: report
-student: Naveen Naidu 
+student: Naveen Naidu
 organisation: coala
 organisation_link : https://coala.io
 project: Handle Nested Programming Languages
@@ -27,7 +27,7 @@ social:
    - username: Naveenaidu
    - link: https://gitter.im/Naveenaidu
  - LinkedIn:
-   - username: Naveen Naidu 
+   - username: Naveen Naidu
    - link: https://www.linkedin.com/in/naveenaidu/
 email: naveennaidu479@gmail.com
 blog: https://naveenaidu.github.io/
@@ -35,101 +35,101 @@ activity:
  - 0:
    - repo: cEPs
    - link: https://github.com/coala/cEPs/pull/188
-   - details: > 
+   - details: >
       cEP-033: Handle Nested Programming Languages
  - 1:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/c42afec17773349d38b319a0c8a331f1cadaa013
+   - link: https://github.com/Naveenaidu/coala/commit/c42afec17773349d38b319a0c8a331f1cadaa013
    - details: >
-      Implement NlSection 
+      Implement NlSection
 
  - 2:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/dd27757467bb3ef41b03dd076eecf60d792929a5
+   - link: https://github.com/Naveenaidu/coala/commit/dd27757467bb3ef41b03dd076eecf60d792929a5
    - details: >
       Implement NlSectionPosition
 
  - 3:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/8f1a37cd921c6e5370fddd669221c5f740723ff7
+   - link: https://github.com/Naveenaidu/coala/commit/8f1a37cd921c6e5370fddd669221c5f740723ff7
    - details: >
       Implement Parser Base Class
 
  - 4:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/5780a6345ad6e85ed5ad37ec3e11ff939b2ad4f3
+   - link: https://github.com/Naveenaidu/coala/commit/5780a6345ad6e85ed5ad37ec3e11ff939b2ad4f3
    - details: >
       Implement PyJinjaParser
 
  - 5:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/5b86750c193efd7c995a5bf3615cc9657c8e17a9
+   - link: https://github.com/Naveenaidu/coala/commit/5b86750c193efd7c995a5bf3615cc9657c8e17a9
    - details: >
       test-requirements.txt: Add regex module
 
  - 6:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/6cd1bc67177f56cad57c6d7e98fcee83bb797608
+   - link: https://github.com/Naveenaidu/coala/commit/6cd1bc67177f56cad57c6d7e98fcee83bb797608
    - details: >
       DefaultArgumentParser.py: Add nested language mode support
 
  - 7:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/1c0035d1350af72c139d0cb95023e20ad405ee07
+   - link: https://github.com/Naveenaidu/coala/commit/1c0035d1350af72c139d0cb95023e20ad405ee07
    - details: >
       TestUtilities.py: Add PEP8TestBear, Jinja2TestBear
 
  - 8:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/27fecf92474b1f5334469c29205fe501aeee04ba
+   - link: https://github.com/Naveenaidu/coala/commit/27fecf92474b1f5334469c29205fe501aeee04ba
    - details: >
       NlInfoExtractor: Add NlInfoExtractor
 
  - 9:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/71c0d041a50e704907e34e212fac5f5e0ae4e91d
+   - link: https://github.com/Naveenaidu/coala/commit/71c0d041a50e704907e34e212fac5f5e0ae4e91d
    - details: >
       NlFileHandler: Add NlFileHandler
 
  - 10:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/20652070886c393f8c4962c2917469c83b46415a
+   - link: https://github.com/Naveenaidu/coala/commit/20652070886c393f8c4962c2917469c83b46415a
    - details: >
       NlCliParsing: Add NlCliParsing
 
  - 11:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/04404d6785b2a56881ee5a6b56e69a3d9fae6082
+   - link: https://github.com/Naveenaidu/coala/commit/04404d6785b2a56881ee5a6b56e69a3d9fae6082
    - details: >
       Implement NlCore
 
  - 12:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/8f45c52ae199ad7dbd08b37c67a809243b2d06d8
+   - link: https://github.com/Naveenaidu/coala/commit/8f45c52ae199ad7dbd08b37c67a809243b2d06d8
    - details: >
       coala_main: Add support for nested language mode
 
  - 13:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/42a8470e1da5861b859e98e8cd2209a709e41c77
+   - link: https://github.com/Naveenaidu/coala/commit/42a8470e1da5861b859e98e8cd2209a709e41c77
    - details: >
       ConsoleInteraction: Add support for nested language mode
 
  - 14:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/41114bda053d34590592230eeeccd9953f43847e
+   - link: https://github.com/Naveenaidu/coala/commit/41114bda053d34590592230eeeccd9953f43847e
    - details: >
       Processing.py: Add support for nested language mode
 
  - 15:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/e8488e55a581d21bc4b14c800f865f44719044ba
+   - link: https://github.com/Naveenaidu/coala/commit/e8488e55a581d21bc4b14c800f865f44719044ba
    - details: >
       ConfigurationGathering: Add support for nested language mode
 
  - 16:
    - repo: coala
-   - link: https://github.com/coala/coala/pull/6066/commits/5c4e058b4221ee8256881fc0d3f95f5d72ec7f1c
+   - link: hhttps://github.com/Naveenaidu/coala/commit/5c4e058b4221ee8256881fc0d3f95f5d72ec7f1c
    - details: >
       result_action: Add support for nested language mode
 
@@ -141,17 +141,17 @@ activity:
 #### Work Done
 
 * [coala](https://github.com/coala/coala/) now has a nested language mode. It allows coala
-to lint through the files that have a combination of nested languages and provided 
+to lint through the files that have a combination of nested languages and provided
 patches to the user, just like how it's done in the normal mode.
 
 * The vast majority of my project was based on laying down the architecuture to make this
-project possible. And hence, I only implemented the support for the files that have 
-`Python` and `Jinja2` as the combination. That being said, extending the support for 
+project possible. And hence, I only implemented the support for the files that have
+`Python` and `Jinja2` as the combination. That being said, extending the support for
 other languages is really easy.
 
 * The user can switch on nested language mode using:
 ```
-coala --handle-nested --languages=python,jinja2 --files=test.py.jj2 
+coala --handle-nested --languages=python,jinja2 --files=test.py.jj2
 --bears=PEP8Bear,Jinja2Bear,SpaceConsistencyBear
 ```
 
@@ -175,14 +175,14 @@ the mentors of coala who kept reviewing my various approaches even with their bu
 schedule, without their insights I would never have been able to finalise on my proposal.
 
 * Since this project deals with the core of the coala, I was pretty scared to get into the
-waters of the huge codebase. But with the constant support of mentors and as the time 
-went on, I was about to understand how the different components of coala actually 
+waters of the huge codebase. But with the constant support of mentors and as the time
+went on, I was about to understand how the different components of coala actually
 pieced together.
 
 * Another difficult situation that I faced was during my Third Phase of GSoC. The approach
 I planned out for the assembling of the files did not seem to work. So I was supposed
 to come with a new approach in a span of 11 days. I was pretty pissed and scared ,but
-apparently it took lesser time than i expected, this taught me not overestimate the 
+apparently it took lesser time than i expected, this taught me not overestimate the
 time and take things one at a time.
 
 * And last not the least was about maintaining the coverage while implementing the details.
@@ -196,15 +196,15 @@ components needs to be designed to keep track of scalability.
 
 * I've complete almost all of the goals that I had planned out for this GSoC. But there
 are a lot's of enhancements that can be done to the way of how Nested Language mode
-can work. 
+can work.
 
 The work to be done is:
 
-1. Enhance the way how parsing is done. For now it supports most of the cases, but there 
-are few edge cases that I might have missed. 
+1. Enhance the way how parsing is done. For now it supports most of the cases, but there
+are few edge cases that I might have missed.
 2. Add parsers for other combination os the languages.
 3. Add support to enable nested language mode from `.coafile`
-4. For now, when we have a line with mixed language, we pass off the mixed language line 
+4. For now, when we have a line with mixed language, we pass off the mixed language line
 to a bear that can handle both the languages. This needs to be changed.
 5. A way to make coala ignore the `position markers` that are added in `NlFileHandler` to
 extract the sections after linting. The changed needs to be made in `ignore_ranges` of
