@@ -1,7 +1,152 @@
-From c42afec17773349d38b319a0c8a331f1cadaa013 Mon Sep 17 00:00:00 2001
+From 8be125bf9ac145812eb6b4bd92b407efad69611a Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 16:17:44 +0530
-Subject: [PATCH 01/19] NlSection.py: Add NlSection modules and it's tests
+Date: Mon, 26 Aug 2019 08:00:00 +0530
+Subject: [PATCH 01/18] NlSectionPosition.py: Add NlSectionPosition
+
+This PR adds the NlSectionPosition class.
+NlSectionPosition class is a derived class of TextRange.
+It gives finer control to set the position. These include
+the line number and column number.
+
+This is a derived class of TextPosition Object.
+---
+ coalib/nestedlib/NlSectionPosition.py    | 52 +++++++++++++++++++++
+ coalib/nestedlib/__init__.py             |  0
+ tests/nestedlib/NlSectionPositionTest.py | 57 ++++++++++++++++++++++++
+ 3 files changed, 109 insertions(+)
+ create mode 100755 coalib/nestedlib/NlSectionPosition.py
+ create mode 100644 coalib/nestedlib/__init__.py
+ create mode 100755 tests/nestedlib/NlSectionPositionTest.py
+
+diff --git a/coalib/nestedlib/NlSectionPosition.py b/coalib/nestedlib/NlSectionPosition.py
+new file mode 100755
+index 000000000..be106b0e4
+--- /dev/null
++++ b/coalib/nestedlib/NlSectionPosition.py
+@@ -0,0 +1,52 @@
++from os.path import abspath
++
++
++from coala_utils.decorators import (
++    enforce_signature, generate_ordering, generate_repr, get_public_members)
++from coalib.results.TextPosition import TextPosition
++
++
++@generate_repr('file', 'line', 'column')
++@generate_ordering('file', 'line', 'column')
++class NlSectionPosition(TextPosition):
++
++    @enforce_signature
++    def __init__(self, file: str, line=None, column=None):
++        """
++        Creates a new NlSection Position object that represents the position of
++        a NlSection in the original source code having nested languages.
++
++        :param file:        The filename
++        :param line:        The line in the file or None, the first line is 1.
++        :param column:      The column indicating the character. The first one
++                            in a line is 1.
++        :raises TypeError:  Raised when
++                            - file is not a string or None
++                            - line or column are not integers
++        """
++        TextPosition.__init__(self, line, column)
++
++        self.filename = file
++        self._file = abspath(file)
++
++    # The values of linted_start and linted_end changes during appliaction of
++    # a patch. Hence we need a setter method
++    @TextPosition.line.setter
++    def line(self, value):
++        self._line = value
++
++    @TextPosition.column.setter
++    def column(self, value):
++        self._column = value
++
++    @property
++    def file(self):
++        return self._file
++
++    def __str__(self):
++        source_position = self.filename
++        if self.line is not None:
++            source_position += ':' + str(self.line)
++        if self.column is not None:
++            source_position += ':' + str(self.column)
++        return source_position
+diff --git a/coalib/nestedlib/__init__.py b/coalib/nestedlib/__init__.py
+new file mode 100644
+index 000000000..e69de29bb
+diff --git a/tests/nestedlib/NlSectionPositionTest.py b/tests/nestedlib/NlSectionPositionTest.py
+new file mode 100755
+index 000000000..2e1bd6aea
+--- /dev/null
++++ b/tests/nestedlib/NlSectionPositionTest.py
+@@ -0,0 +1,57 @@
++import unittest
++
++from coalib.nestedlib.NlSectionPosition import NlSectionPosition
++from coalib.results.TextPosition import ZeroOffsetError
++
++
++class NestedPositionTest(unittest.TestCase):
++
++    def test_initialization(self):
++        with self.assertRaises(TypeError):
++            NlSectionPosition(1, 'file')
++
++        with self.assertRaises(TypeError):
++            NlSectionPosition('file', 1.1)
++
++        with self.assertRaises(TypeError):
++            NlSectionPosition('file', 1, 1.1)
++
++        with self.assertRaises(ValueError):
++            NlSectionPosition('file', None, 1)
++
++        with self.assertRaises(ZeroOffsetError):
++            NlSectionPosition('file', 12, 0)
++
++        # The following values should work
++        NlSectionPosition('file', None, None)
++        NlSectionPosition('file', 4, None)
++        NlSectionPosition('file', 5, 4)
++
++    def test_string_conversion(self):
++        uut = NlSectionPosition('filename', 1)
++        self.assertRegex(
++            repr(uut),
++            "<NlSectionPosition object\\(file='.*filename', line=1, "
++            'column=None\\) at 0x[0-9a-fA-F]+>')
++        self.assertEqual(str(uut), 'filename:1')
++
++        uut = NlSectionPosition('None', None)
++        self.assertRegex(
++            repr(uut),
++            "<NlSectionPosition object\\(file='.*None', line=None, "
++            'column=None\\) at 0x[0-9a-fA-F]+>')
++        self.assertEqual(str(uut), 'None')
++
++        uut = NlSectionPosition('filename', 3, 2)
++        self.assertEqual(str(uut), 'filename:3:2')
++
++    # Set the setter and getter properties
++    def test_properties(self):
++        uut = NlSectionPosition('file', 1, 2)
++        self.assertEqual(uut.line, 1)
++        self.assertEqual(uut.column, 2)
++
++        uut.line = 5
++        uut.column = None
++        self.assertEqual(uut.line, 5)
++        self.assertEqual(uut.column, None)
+
+From 1b00daf9692560fdd6d633548c04af166f47dc1c Mon Sep 17 00:00:00 2001
+From: Naveenaidu <naveennaidu479@gmail.com>
+Date: Mon, 26 Aug 2019 08:01:00 +0530
+Subject: [PATCH 02/18] NlSection.py: Add NlSection modules and it's tests
 
 This PR adds the class NlSection.
 
@@ -240,150 +385,55 @@ index 000000000..63a51d348
 +        self.assertRegex(
 +            str(uut), '.*A: 1: python: L2 C4: L4 C8: L2 C4: L4 C8')
 
-From dd27757467bb3ef41b03dd076eecf60d792929a5 Mon Sep 17 00:00:00 2001
+From 6006be65edecdb3a166bc8ab385010a5c183ada9 Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 16:23:32 +0530
-Subject: [PATCH 02/19] NlSectionPosition.py: Add NlSectionPosition
+Date: Mon, 26 Aug 2019 08:02:00 +0530
+Subject: [PATCH 03/18] test-requirement.txt: Add regex
 
-This PR adds the NlSectionPosition class.
-NlSectionPosition class is a derived class of TextRange.
-It gives finer control to set the position. These include
-the line number and column number.
-
-This is a derived class of TextPosition Object.
+Regex module is used in PyJinjaParser to
+extract the NlSections. Hence adding this
+in the test-requirement.txt
 ---
- coalib/nestedlib/NlSectionPosition.py    | 52 +++++++++++++++++++++
- tests/nestedlib/NlSectionPositionTest.py | 57 ++++++++++++++++++++++++
- 2 files changed, 109 insertions(+)
- create mode 100755 coalib/nestedlib/NlSectionPosition.py
- create mode 100755 tests/nestedlib/NlSectionPositionTest.py
+ test-requirements.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ mode change 100644 => 100755 test-requirements.txt
 
-diff --git a/coalib/nestedlib/NlSectionPosition.py b/coalib/nestedlib/NlSectionPosition.py
-new file mode 100755
-index 000000000..be106b0e4
---- /dev/null
-+++ b/coalib/nestedlib/NlSectionPosition.py
-@@ -0,0 +1,52 @@
-+from os.path import abspath
-+
-+
-+from coala_utils.decorators import (
-+    enforce_signature, generate_ordering, generate_repr, get_public_members)
-+from coalib.results.TextPosition import TextPosition
-+
-+
-+@generate_repr('file', 'line', 'column')
-+@generate_ordering('file', 'line', 'column')
-+class NlSectionPosition(TextPosition):
-+
-+    @enforce_signature
-+    def __init__(self, file: str, line=None, column=None):
-+        """
-+        Creates a new NlSection Position object that represents the position of
-+        a NlSection in the original source code having nested languages.
-+
-+        :param file:        The filename
-+        :param line:        The line in the file or None, the first line is 1.
-+        :param column:      The column indicating the character. The first one
-+                            in a line is 1.
-+        :raises TypeError:  Raised when
-+                            - file is not a string or None
-+                            - line or column are not integers
-+        """
-+        TextPosition.__init__(self, line, column)
-+
-+        self.filename = file
-+        self._file = abspath(file)
-+
-+    # The values of linted_start and linted_end changes during appliaction of
-+    # a patch. Hence we need a setter method
-+    @TextPosition.line.setter
-+    def line(self, value):
-+        self._line = value
-+
-+    @TextPosition.column.setter
-+    def column(self, value):
-+        self._column = value
-+
-+    @property
-+    def file(self):
-+        return self._file
-+
-+    def __str__(self):
-+        source_position = self.filename
-+        if self.line is not None:
-+            source_position += ':' + str(self.line)
-+        if self.column is not None:
-+            source_position += ':' + str(self.column)
-+        return source_position
-diff --git a/tests/nestedlib/NlSectionPositionTest.py b/tests/nestedlib/NlSectionPositionTest.py
-new file mode 100755
-index 000000000..2e1bd6aea
---- /dev/null
-+++ b/tests/nestedlib/NlSectionPositionTest.py
-@@ -0,0 +1,57 @@
-+import unittest
-+
-+from coalib.nestedlib.NlSectionPosition import NlSectionPosition
-+from coalib.results.TextPosition import ZeroOffsetError
-+
-+
-+class NestedPositionTest(unittest.TestCase):
-+
-+    def test_initialization(self):
-+        with self.assertRaises(TypeError):
-+            NlSectionPosition(1, 'file')
-+
-+        with self.assertRaises(TypeError):
-+            NlSectionPosition('file', 1.1)
-+
-+        with self.assertRaises(TypeError):
-+            NlSectionPosition('file', 1, 1.1)
-+
-+        with self.assertRaises(ValueError):
-+            NlSectionPosition('file', None, 1)
-+
-+        with self.assertRaises(ZeroOffsetError):
-+            NlSectionPosition('file', 12, 0)
-+
-+        # The following values should work
-+        NlSectionPosition('file', None, None)
-+        NlSectionPosition('file', 4, None)
-+        NlSectionPosition('file', 5, 4)
-+
-+    def test_string_conversion(self):
-+        uut = NlSectionPosition('filename', 1)
-+        self.assertRegex(
-+            repr(uut),
-+            "<NlSectionPosition object\\(file='.*filename', line=1, "
-+            'column=None\\) at 0x[0-9a-fA-F]+>')
-+        self.assertEqual(str(uut), 'filename:1')
-+
-+        uut = NlSectionPosition('None', None)
-+        self.assertRegex(
-+            repr(uut),
-+            "<NlSectionPosition object\\(file='.*None', line=None, "
-+            'column=None\\) at 0x[0-9a-fA-F]+>')
-+        self.assertEqual(str(uut), 'None')
-+
-+        uut = NlSectionPosition('filename', 3, 2)
-+        self.assertEqual(str(uut), 'filename:3:2')
-+
-+    # Set the setter and getter properties
-+    def test_properties(self):
-+        uut = NlSectionPosition('file', 1, 2)
-+        self.assertEqual(uut.line, 1)
-+        self.assertEqual(uut.column, 2)
-+
-+        uut.line = 5
-+        uut.column = None
-+        self.assertEqual(uut.line, 5)
-+        self.assertEqual(uut.column, None)
+diff --git a/test-requirements.txt b/test-requirements.txt
+old mode 100644
+new mode 100755
+index 7376a2c1e..fae19586a
+--- a/test-requirements.txt
++++ b/test-requirements.txt
+@@ -30,3 +30,4 @@ pip<10
+ six>=1.11.0
+ wheel~=0.29
+ testfixtures~=5.3.1
++regex
 
-From 8f1a37cd921c6e5370fddd669221c5f740723ff7 Mon Sep 17 00:00:00 2001
+From 8aae89717f9226e3d8f7f306097792f6b2b98bd2 Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 16:32:12 +0530
-Subject: [PATCH 03/19] Parser.py: Add Parser.py
+Date: Mon, 26 Aug 2019 08:03:00 +0530
+Subject: [PATCH 04/18] requirements.txt: Add regex module
+
+Regex module is used by PyJinjaParser.
+---
+ requirements.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/requirements.txt b/requirements.txt
+index 7ec4b1a6a..cc6f1eef8 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -10,3 +10,4 @@ PyPrint~=0.2.6
+ requests~=2.12
+ setuptools>=21.2.2
+ unidiff~=0.5.2
++regex
+
+From 4a5296ed945246e4b9ef9d8965c475c006b84fb3 Mon Sep 17 00:00:00 2001
+From: Naveenaidu <naveennaidu479@gmail.com>
+Date: Mon, 26 Aug 2019 08:04:00 +0530
+Subject: [PATCH 05/18] Parser.py: Add Parser.py
 
 This PR adds the Parser class.
 
@@ -396,9 +446,11 @@ This is a Base Class for all the parsers that would henceforth
 parse nested language files.
 ---
  coalib/nestedlib/parsers/Parser.py    | 45 +++++++++++++++++++++++++++
+ coalib/nestedlib/parsers/__init__.py  |  0
  tests/nestedlib/parsers/ParserTest.py | 41 ++++++++++++++++++++++++
- 2 files changed, 86 insertions(+)
+ 3 files changed, 86 insertions(+)
  create mode 100755 coalib/nestedlib/parsers/Parser.py
+ create mode 100644 coalib/nestedlib/parsers/__init__.py
  create mode 100755 tests/nestedlib/parsers/ParserTest.py
 
 diff --git a/coalib/nestedlib/parsers/Parser.py b/coalib/nestedlib/parsers/Parser.py
@@ -452,6 +504,9 @@ index 000000000..2a3c8aefb
 +                                 end_line=end_line,
 +                                 end_column=end_column,
 +                                 )
+diff --git a/coalib/nestedlib/parsers/__init__.py b/coalib/nestedlib/parsers/__init__.py
+new file mode 100644
+index 000000000..e69de29bb
 diff --git a/tests/nestedlib/parsers/ParserTest.py b/tests/nestedlib/parsers/ParserTest.py
 new file mode 100755
 index 000000000..1323698c5
@@ -500,24 +555,24 @@ index 000000000..1323698c5
 +        self.assertEqual(self.nl_section.start, uut.start)
 +        self.assertEqual(self.nl_section.end, uut.end)
 
-From 5780a6345ad6e85ed5ad37ec3e11ff939b2ad4f3 Mon Sep 17 00:00:00 2001
+From ac5e04f2e6e0ec2f009cacb9dec0c4c70b48a7ee Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 16:37:25 +0530
-Subject: [PATCH 04/19] PyJinjaParser.py: Add PyJinjaParser
+Date: Mon, 26 Aug 2019 08:05:00 +0530
+Subject: [PATCH 06/18] PyJinjaParser.py: Add PyJinjaParser
 
 This PR adds an Parser that can parse through a nested
 language file which is made up of the combination of
 python and jinja2 and gives out a list of NlSection
 Objects.
 ---
- coalib/nestedlib/parsers/PyJinjaParser.py     | 560 ++++++++++++++++++
+ coalib/nestedlib/parsers/PyJinjaParser.py     | 561 ++++++++++++++++++
  tests/nestedlib/parsers/PyJinjaParserTest.py  | 293 +++++++++
  .../file_test_files/test-jinja-py.py.jj2.txt  |   6 +
  .../file_test_files/test-jinja2-py.jj2.txt    |   6 +
  .../file_test_files/test-setup-py.py.jj2.txt  | 368 ++++++++++++
  .../parsers/file_test_files/test1.txt         |   3 +
  .../coala-setup-parser-output.txt             | 211 +++++++
- 7 files changed, 1447 insertions(+)
+ 7 files changed, 1448 insertions(+)
  create mode 100755 coalib/nestedlib/parsers/PyJinjaParser.py
  create mode 100755 tests/nestedlib/parsers/PyJinjaParserTest.py
  create mode 100755 tests/nestedlib/parsers/file_test_files/test-jinja-py.py.jj2.txt
@@ -528,10 +583,10 @@ Objects.
 
 diff --git a/coalib/nestedlib/parsers/PyJinjaParser.py b/coalib/nestedlib/parsers/PyJinjaParser.py
 new file mode 100755
-index 000000000..630028e66
+index 000000000..a69ccd994
 --- /dev/null
 +++ b/coalib/nestedlib/parsers/PyJinjaParser.py
-@@ -0,0 +1,560 @@
+@@ -0,0 +1,561 @@
 +from coalib.nestedlib.parsers.Parser import Parser, create_nl_section, get_file
 +import regex as re
 +
@@ -630,11 +685,12 @@ index 000000000..630028e66
 +        If the line is made up of only one language. There are two things that
 +        can be done.
 +        1. If the language of the last nl_section is different than the lang of
-+           the current line, then create a new nl_section for the current line.
++        the current line, then create a new nl_section for the current line.
++
 +        2. If the language of the last nl_section is same as that of the current
-+           line, update the end_line and end_column values of the last
-+           nl_section. This is equivalent to appending the current line to the
-+           previous nl_section.
++        line, update the end_line and end_column values of the last
++        nl_section. This is equivalent to appending the current line to the
++        previous nl_section.
 +
 +        :param file:         The name of the original nested languges file.
 +        :param line:         The current line.
@@ -1071,20 +1127,20 @@ index 000000000..630028e66
 +        >>> str(nl_sections[3])
 +        '...test.py: 4: python: L5 C12: L5 C30: L5 C12: L5 C30'
 +
-+        The details of the ouput from the parser is as follows:
++        The details of the ouput from the parser is as follows
 +
-+        The first column    - The name of the file the original nested language
-+                              file.
-+        The second column   - The language of the nl_section
-+        The third column    - The index of the section.
-+        The fourth column   - The start of that section in the original nested
-+                              file.
-+        The fifth column    - The end of that section in the original nested
-+                              file.
-+        The sixth column    - The start of that section in the original nested
-+                              file.
-+        The seventh column  - The start of that section in the original nested
-+                              file.
++        :The first column:     The name of the file the original nested language
++                               file.
++        :The second column:    The language of the nl_section
++        :The third column:     The index of the section.
++        :The fourth column:    The start of that section in the original nested
++                               file.
++        :The fifth column:     The end of that section in the original nested
++                               file.
++        :The sixth column:     The start of that section in the original nested
++                               file.
++        :The seventh column:   The start of that section in the original nested
++                               file.
 +        """
 +        # A list to store all the nl_section in the file
 +
@@ -2020,55 +2076,10 @@ index 000000000..c4722d02e
 +: 211: python: L366 C1: L368 C5: L366 C1: L368 C5
 \ No newline at end of file
 
-From 5b86750c193efd7c995a5bf3615cc9657c8e17a9 Mon Sep 17 00:00:00 2001
+From 26453e2dad5dd3ad94d288496f1e927c226a8e79 Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 16:44:45 +0530
-Subject: [PATCH 05/19] test-requirement.txt: Add regex
-
-Regex module is used in PyJinjaParser to
-extract the NlSections. Hence adding this
-in the test-requirement.txt
----
- test-requirements.txt | 1 +
- 1 file changed, 1 insertion(+)
- mode change 100644 => 100755 test-requirements.txt
-
-diff --git a/test-requirements.txt b/test-requirements.txt
-old mode 100644
-new mode 100755
-index 7376a2c1e..fae19586a
---- a/test-requirements.txt
-+++ b/test-requirements.txt
-@@ -30,3 +30,4 @@ pip<10
- six>=1.11.0
- wheel~=0.29
- testfixtures~=5.3.1
-+regex
-
-From fe54857ecfd4457b4869c45a3f4d8f9608e634ff Mon Sep 17 00:00:00 2001
-From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 16:57:11 +0530
-Subject: [PATCH 06/19] requirements.txt: Add regex module
-
-Regex module is used by PyJinjaParser.
----
- requirements.txt | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/requirements.txt b/requirements.txt
-index 7ec4b1a6a..cc6f1eef8 100644
---- a/requirements.txt
-+++ b/requirements.txt
-@@ -10,3 +10,4 @@ PyPrint~=0.2.6
- requests~=2.12
- setuptools>=21.2.2
- unidiff~=0.5.2
-+regex
-
-From 6cd1bc67177f56cad57c6d7e98fcee83bb797608 Mon Sep 17 00:00:00 2001
-From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 17:19:02 +0530
-Subject: [PATCH 07/19] DefaultArgParser.py: Add nested language mode
+Date: Mon, 26 Aug 2019 08:06:00 +0530
+Subject: [PATCH 07/18] DefaultArgParser.py: Add nested language mode
 
 This PR, adds the arguments that will be needed to
 run coala in Nested language mode.
@@ -2123,10 +2134,10 @@ diff --git a/tests/parsing/DefaultArgParserTest.py b/tests/parsing/DefaultArgPar
 old mode 100644
 new mode 100755
 
-From 1c0035d1350af72c139d0cb95023e20ad405ee07 Mon Sep 17 00:00:00 2001
+From ea1a6b82e267c5bf9883b5057267b8fd00539a8a Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 18:09:54 +0530
-Subject: [PATCH 08/19] TestUtilities.py: Add PEP8TestBear, Jinja2TestBear
+Date: Mon, 26 Aug 2019 08:07:00 +0530
+Subject: [PATCH 08/18] TestUtilities.py: Add PEP8TestBear, Jinja2TestBear
 
 Add PEP8TestBear and Jinja2TestBear for running the
 tests on NestedLanguage files
@@ -2207,10 +2218,10 @@ index 000000000..962400991
 +        :param config: An optional dummy config file.
 +        """
 
-From 27fecf92474b1f5334469c29205fe501aeee04ba Mon Sep 17 00:00:00 2001
+From 9def58ad258bbd6a783ff4f4727a5dd8451e6641 Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 18:11:19 +0530
-Subject: [PATCH 09/19] NlInfoExtractor: Add NlInfoExractor
+Date: Mon, 26 Aug 2019 08:08:00 +0530
+Subject: [PATCH 09/18] NlInfoExtractor: Add NlInfoExractor
 
 NlInfoExtractor is used to extract the information from
 the arguments provide when running coala in nested language
@@ -2224,18 +2235,18 @@ mode. It extracts information such:
 NlInfoExtractor also converts the arg_list provided into args
 that coala can use.
 ---
- coalib/nestedlib/NlInfoExtractor.py    | 259 +++++++++++++++++++++++++
+ coalib/nestedlib/NlInfoExtractor.py    | 260 +++++++++++++++++++++++++
  tests/nestedlib/NlInfoExtractorTest.py | 154 +++++++++++++++
- 2 files changed, 413 insertions(+)
+ 2 files changed, 414 insertions(+)
  create mode 100755 coalib/nestedlib/NlInfoExtractor.py
  create mode 100755 tests/nestedlib/NlInfoExtractorTest.py
 
 diff --git a/coalib/nestedlib/NlInfoExtractor.py b/coalib/nestedlib/NlInfoExtractor.py
 new file mode 100755
-index 000000000..0599fc15b
+index 000000000..51ecabc2b
 --- /dev/null
 +++ b/coalib/nestedlib/NlInfoExtractor.py
-@@ -0,0 +1,259 @@
+@@ -0,0 +1,260 @@
 +import logging
 +from copy import deepcopy
 +from coalib.bears.BEAR_KIND import BEAR_KIND
@@ -2299,7 +2310,8 @@ index 000000000..0599fc15b
 +                         language files sepecified by the user.
 +    :return:             Returns a dictionary with `language` as the key and
 +                         `bears` as the value.
-+    For eg: If the user specified that the nested language files has python
++
++    For eg, If the user specified that the nested language files has python
 +    and jinja2 as languages and the bears we want to run is `PEP8Bear`,
 +    `Jinja2Bear` and `SpaceConsistencyBear`.
 +
@@ -2308,9 +2320,8 @@ index 000000000..0599fc15b
 +    >> nl_info_dict['bears'] = ['PEP8Bear','Jinja2Bear', 'SpaceConsistencyBear']
 +    >> generate_lang_bear_dict(nl_info_dict)
 +    {'python':['PEP8Bear','SpaceConsistencyBear'],
-+     'jinja': ['Jinja2Bear', 'SpaceConsistencyBear']
++    'jinja': ['Jinja2Bear', 'SpaceConsistencyBear']
 +    }
-+
 +    """
 +    lang_bear_dict = {}
 +    bears = nl_info_dict.get('bears', '')
@@ -2349,7 +2360,7 @@ index 000000000..0599fc15b
 +    """
 +    Return a dictionary with the information about nested language file.
 +
-+    nl_info_dict : The dictionaray containing all the details
++    :nl_info_dict: The dictionaray containing all the details
 +
 +    For eg: If the user passes the following arguments to coala
 +
@@ -2359,23 +2370,25 @@ index 000000000..0599fc15b
 +    ```
 +
 +    If the above args are passed to nl_info dict, the output we get is:
-+    ```
-+    {
-+        'bears': ['PEP8Bear', 'SpaceConsistencyBear', 'GitCommitBear'],
-+        'files': ['test.py', 'test2.py'],
-+        'lang_bear_dict': {
-+                            'jinja2': ['SpaceConsistencyBear'],
-+                            'python': ['PEP8Bear', 'SpaceConsistencyBear']
-+                          },
-+        'languages': ['python', 'jinja2'],
-+    }
-+    ```
-+    The details of keys in nl_info_dict are:
-+    :key bears:          Bears specified by the user
-+    :key files:          Nested Files to run the analysis on
-+    :key languages:      Languages present in the nested file
-+    :key lang_bear_dict: Dictionary with `language` as the key and the `bear` as
-+                         `values`
++
++    >>> nl_info_dict =  {
++    ...     'bears': ['PEP8Bear', 'SpaceConsistencyBear', 'GitCommitBear'],
++    ...     'files': ['test.py', 'test2.py'],
++    ...     'lang_bear_dict': {
++    ...                         'jinja2': ['SpaceConsistencyBear'],
++    ...                         'python': ['PEP8Bear', 'SpaceConsistencyBear']
++    ...                       },
++    ...     'languages': ['python', 'jinja2'],
++    ... }
++
++    The details of keys in nl_info_dict are,
++
++    :bears:          Bears specified by the user
++    :files:          Nested Files to run the analysis on
++    :languages:      Languages present in the nested file
++    :lang_bear_dict: Dictionary with language as the key and the bear as
++                     values
++
 +    """
 +    nl_info_dict = {}
 +    for arg_key, arg_value in sorted(vars(args).items()):
@@ -2431,26 +2444,26 @@ index 000000000..0599fc15b
 +
 +    If the above args are passed to generate_arg_list, the output of nl_info we
 +    get is:
-+    ```
-+    {
-+        'bears': ['PEP8Bear', 'SpaceConsistencyBear', 'GitCommitBear'],
-+        'files': ['test.py', 'test2.py'],
-+        'lang_bear_dict': {
-+                            'jinja2': ['SpaceConsistencyBear'],
-+                            'python': ['PEP8Bear', 'SpaceConsistencyBear']
-+                          },
-+        'languages': ['python', 'jinja2'],
-+        'nl_file_info': { 'test.py' : {
-+                                        'python' : 'test.py_nl_python',
-+                                        'jinja2' : 'test.py_nl_jinja2'
-+                                      },
 +
-+                          'test2.py': {
-+                                        'python' : 'test2.py_nl_python',
-+                                        'jinja2' : 'test2.py_nl_jinja2'
-+                                      }
-+                        }
-+    }
++    >>> nl_info =  {
++    ...     'bears': ['PEP8Bear', 'SpaceConsistencyBear', 'GitCommitBear'],
++    ...     'files': ['test.py', 'test2.py'],
++    ...     'lang_bear_dict': {
++    ...                         'jinja2': ['SpaceConsistencyBear'],
++    ...                         'python': ['PEP8Bear', 'SpaceConsistencyBear']
++    ...                       },
++    ...     'languages': ['python', 'jinja2'],
++    ...     'nl_file_info': { 'test.py' : {
++    ...                                     'python' : 'test.py_nl_python',
++    ...                                     'jinja2' : 'test.py_nl_jinja2'
++    ...                                   },
++    ...
++    ...                       'test2.py': {
++    ...                                     'python' : 'test2.py_nl_python',
++    ...                                     'jinja2' : 'test2.py_nl_jinja2'
++    ...                                   }
++    ...                     }
++    ... }
 +
 +    When the above args are passed to generate_arg_list, it returns the
 +    following argument objects, which is equivalent to the following
@@ -2470,7 +2483,6 @@ index 000000000..0599fc15b
 +    ```
 +    coala --files=test.py_nl_jinja2 --bears=Jinja2Bear,SpaceConsistencyBear
 +    ```
-+
 +    """
 +    nl_info = nl_info_dict(args)
 +
@@ -2497,7 +2509,7 @@ index 000000000..0599fc15b
 +    return arg_list, nl_info
 diff --git a/tests/nestedlib/NlInfoExtractorTest.py b/tests/nestedlib/NlInfoExtractorTest.py
 new file mode 100755
-index 000000000..026f717ce
+index 000000000..3a7efa666
 --- /dev/null
 +++ b/tests/nestedlib/NlInfoExtractorTest.py
 @@ -0,0 +1,154 @@
@@ -2519,13 +2531,13 @@ index 000000000..026f717ce
 +
 +    def setUp(self):
 +        self.arg_parser = default_arg_parser()
-+        self.test_dir_path = os.path.abspath(__file__ + "/../..")
-+        self.test_bear_path = os.path.join(self.test_dir_path, "test_bears")
++        self.test_dir_path = os.path.abspath(__file__ + '/../..')
++        self.test_bear_path = os.path.join(self.test_dir_path, 'test_bears')
 +        # Both the upper case and lower case is supported in `languages`
 +        # argument
 +        self.args = self.arg_parser.parse_args([
-+                                    '-f', 'test.py.jj2,test2.py.jj2',
-+                                    '-b',
++                                '-f', 'test.py.jj2,test2.py.jj2',
++                                '-b',
 +                                'PEP8TestBear,Jinja2TestBear,LineCountTestBear',
 +                                '--handle-nested', '--languages',
 +                                'PYTHON,Jinja2',
@@ -2557,9 +2569,9 @@ index 000000000..026f717ce
 +                check_lang_support(lang_list)
 +                self.assertRegex(
 +                    cm.output[0],
-+                    "The language combination are not supported. "
-+                    "Please check if the languages are provided with"
-+                    "the correct names")
++                    'The language combination are not supported. '
++                    'Please check if the languages are provided with'
++                    'the correct names')
 +
 +        uut_lang_list = ['PYTHON', 'JiNjA2']
 +        check_lang_support(uut_lang_list)
@@ -2656,10 +2668,10 @@ index 000000000..026f717ce
 +            uut_nl_info, uut_temp_file_name)
 +        self.assertEqual(uut_temp_file_lang, 'jinja2')
 
-From 71c0d041a50e704907e34e212fac5f5e0ae4e91d Mon Sep 17 00:00:00 2001
+From 8f1b2d5cde068fc3e6e9ff51c0bb4c103ef769c2 Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 20:23:17 +0530
-Subject: [PATCH 10/19] NlFileHandler: Add NlFileHandler
+Date: Mon, 26 Aug 2019 08:09:00 +0530
+Subject: [PATCH 10/18] NlFileHandler: Add NlFileHandler
 
 This PR adds the NlFileHandler.
 
@@ -2669,18 +2681,18 @@ preprocess the nl_file_dicts to add the position markers
 to the nl_file_dicts to mark the position of sections
 in the file.
 ---
- coalib/nestedlib/NlFileHandler.py    | 376 ++++++++++++++
+ coalib/nestedlib/NlFileHandler.py    | 375 ++++++++++++++
  tests/nestedlib/NlFileHandlerTest.py | 743 +++++++++++++++++++++++++++
- 2 files changed, 1119 insertions(+)
+ 2 files changed, 1118 insertions(+)
  create mode 100755 coalib/nestedlib/NlFileHandler.py
  create mode 100755 tests/nestedlib/NlFileHandlerTest.py
 
 diff --git a/coalib/nestedlib/NlFileHandler.py b/coalib/nestedlib/NlFileHandler.py
 new file mode 100755
-index 000000000..981d7c02a
+index 000000000..c72992036
 --- /dev/null
 +++ b/coalib/nestedlib/NlFileHandler.py
-@@ -0,0 +1,376 @@
+@@ -0,0 +1,375 @@
 +from coalib.io.File import File
 +from copy import deepcopy
 +import logging
@@ -2881,7 +2893,7 @@ index 000000000..981d7c02a
 +    # For eg: In a combination of Python and Jinja, we mark the mixed lang
 +    # nl_sections with jinja2 since Jinja2Bear can lint through them
 +    parser_name = parser.__class__.__name__
-+    mixed_lang = ""
++    mixed_lang = ''
 +    for parser_mixed_lang_dict in PARSER_MIXED_LINE_COMB:
 +        for parser, lang in parser_mixed_lang_dict.items():
 +            if parser_name.lower() == parser.lower():
@@ -2889,7 +2901,7 @@ index 000000000..981d7c02a
 +                break
 +
 +    if not mixed_lang:
-+        logging.error("No PARSER_MIXED_LINE_COMB exist")
++        logging.error('No PARSER_MIXED_LINE_COMB exist')
 +        raise SystemExit(2)
 +
 +    preprocessed_nl_section_index = 1
@@ -2900,8 +2912,8 @@ index 000000000..981d7c02a
 +
 +        nl_section = all_nl_sections[index]
 +        mixed_lang_section, num_mixed_nl_sections = is_mixed_lang_section(
-+                                                  all_nl_sections[index:],
-+                                                  nl_section_to_check=nl_section)
++                                            all_nl_sections[index:],
++                                            nl_section_to_check=nl_section)
 +        if mixed_lang_section:
 +            mixed_nl_section = deepcopy(nl_section)
 +            mixed_nl_section.start.column = None
@@ -2940,28 +2952,28 @@ index 000000000..981d7c02a
 +    file
 +
 +    The following example:
-+    ```
-+    def (hello):
-+        print("Thanos ROCKS!!")
++
++    Let's assume we have the following file:
++    x = "python lines"
++    y = "Next 2 lines has jinja 2"
 +
 +
-+    print("Next nl_section starts")
-+    ```
++    z = "Next python nl_section starts"
 +
 +    Assume the empty lines to be the lines where jinja2 content was present.
 +
 +    After preprocessing the above lines looks like:
-+    ```
-+    # Start nl section 1
-+    def (hello):
-+        print("Thanos ROCKS!!")
-+    # End nl section 1
++    >>> preprocessed_line_list = ['# Start nl section 1\\n',
++    ...                           'x = "python lines"\\n',
++    ...                           'y = "Next 2 lines has jinja 2"\\n',
++    ...                           '# End nl section 1\\n',
++    ...                           '\\n',
++    ...                           '\\n',
++    ...                           '# Start nl section 2\\n',
++    ...                           'z = "Next python nl_section starts"\\n',
++    ...                           '# End nl section 2\\n',
++    ...                           ]
 +
-+
-+    # Start nl section 2
-+    print("Next nl_section starts")
-+    # End nl section 2
-+    ```
 +    We will also include the section number/index into the marker string.
 +    This helps while reassembling.
 +    Note that the lines where the nl section position markers are present would
@@ -2974,8 +2986,8 @@ index 000000000..981d7c02a
 +    # For now this string works for the combination of Python and Jinja
 +    # When more language support is added, You can use `if` statements to
 +    # use the proper prefix
-+    start_marker_prefix = "# Start Nl Section: "
-+    end_marker_prefix = "# End Nl Section: "
++    start_marker_prefix = '# Start Nl Section: '
++    end_marker_prefix = '# End Nl Section: '
 +
 +    # Store the count of number of lines have been added.
 +    added_lines = 0
@@ -3031,19 +3043,18 @@ index 000000000..981d7c02a
 +
 +
 +    The file_dict that contains only `jinja2` lines of the original files are:
-+    {'test.py_nl_jinja2': ('\\n',
-+                          '{% if x is True %}\\n',
-+                           '    {% set var3 = value3 %}\\n',
-+                           '{% elif %}\\n',
-+                           '        {{ var }}                   \\n')}
++    >>> jinja2_dict = {'test.py_nl_jinja2': ('\\n',
++    ...                '{% if x is True %}\\n',
++    ...                '    {% set var3 = value3 %}\\n',
++    ...                '{% elif %}\\n',
++    ...                '        {{ var }}                   \\n')}
 +
 +    The file_dict that contains only `python` lines of the original file are:
-+    {'test.py_nl_python': ('"for x in y:\\n',
-+                           '\\n',
-+                           '\\n',
-+                           '\\n',
-+                           "                  = print('Bye Bye')\\n")}
-+
++    >>> python_dict = {'test.py_nl_python': ('for x in y:\\n',
++    ...                '\\n',
++    ...                '\\n',
++    ...                '\\n',
++    ...                "                  = print('Bye Bye')\\n")}
 +    """
 +    # ENHANCEMENT: Maybe instead of making parser parse through the file for
 +    # every nested language. We can store it somehow?
@@ -3059,7 +3070,7 @@ index 000000000..981d7c02a
 +    return file_dict
 diff --git a/tests/nestedlib/NlFileHandlerTest.py b/tests/nestedlib/NlFileHandlerTest.py
 new file mode 100755
-index 000000000..c4ca26092
+index 000000000..e6862f188
 --- /dev/null
 +++ b/tests/nestedlib/NlFileHandlerTest.py
 @@ -0,0 +1,743 @@
@@ -3254,9 +3265,9 @@ index 000000000..c4ca26092
 +            '\n',
 +            '# Start Nl Section: 3\n',
 +            '{% endblock %}\n',
-+            "{% set min_python_version = " +
++            '{% set min_python_version = ' +
 +            "min_python_version|default('2.6') %}\n",
-+            "{% set min_python_version = " +
++            '{% set min_python_version = ' +
 +            "min_python_version.split('.', 2) %}\n",
 +            '\n',
 +            '{% block header %}\n',
@@ -3348,7 +3359,7 @@ index 000000000..c4ca26092
 +            '\n',
 +            '# Start Nl Section: 29\n',
 +            "{% if not entry_points or 'console_scripts' " +
-+            "not in entry_points %}\n",
++            'not in entry_points %}\n',
 +            '# End Nl Section: 29\n',
 +            '\n',
 +            '# Start Nl Section: 31\n',
@@ -3807,10 +3818,10 @@ index 000000000..c4ca26092
 +
 +        self.assertEqual(temp_file_dict[uut_temp_file_name], expected_tuple)
 
-From 20652070886c393f8c4962c2917469c83b46415a Mon Sep 17 00:00:00 2001
+From 7bd48a4ca1bfe8733f69f35a87f024a025394b2f Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Wed, 21 Aug 2019 20:34:52 +0530
-Subject: [PATCH 11/19] NlCliParsing: Add NlCliParsing
+Date: Mon, 26 Aug 2019 08:10:00 +0530
+Subject: [PATCH 11/18] NlCliParsing: Add NlCliParsing
 
 This PR adds the NlCliParsing.
 
@@ -3818,12 +3829,9 @@ NlCliParsing is used to parse the cli arguments and use
 the information to create cli_sections just like coala
 does when it receives arguments from CLI
 ---
- coalib/nestedlib/NlCliParsing.py       | 147 +++++++++++++++++++++++++
- coalib/nestedlib/NlFileHandler.py      |  12 +-
- tests/nestedlib/NlCliParsingTest.py    | 112 +++++++++++++++++++
- tests/nestedlib/NlFileHandlerTest.py   |   6 +-
- tests/nestedlib/NlInfoExtractorTest.py |  14 +--
- 5 files changed, 275 insertions(+), 16 deletions(-)
+ coalib/nestedlib/NlCliParsing.py    | 147 ++++++++++++++++++++++++++++
+ tests/nestedlib/NlCliParsingTest.py | 112 +++++++++++++++++++++
+ 2 files changed, 259 insertions(+)
  create mode 100755 coalib/nestedlib/NlCliParsing.py
  create mode 100755 tests/nestedlib/NlCliParsingTest.py
 
@@ -3980,50 +3988,6 @@ index 000000000..977b8b6de
 +                "'output' or 'relpath' cannot be used without `--json`.")
 +
 +    return True
-diff --git a/coalib/nestedlib/NlFileHandler.py b/coalib/nestedlib/NlFileHandler.py
-index 981d7c02a..5645dfc94 100755
---- a/coalib/nestedlib/NlFileHandler.py
-+++ b/coalib/nestedlib/NlFileHandler.py
-@@ -198,7 +198,7 @@ def get_preprocessed_nl_sections(all_nl_sections, parser):
-     # For eg: In a combination of Python and Jinja, we mark the mixed lang
-     # nl_sections with jinja2 since Jinja2Bear can lint through them
-     parser_name = parser.__class__.__name__
--    mixed_lang = ""
-+    mixed_lang = ''
-     for parser_mixed_lang_dict in PARSER_MIXED_LINE_COMB:
-         for parser, lang in parser_mixed_lang_dict.items():
-             if parser_name.lower() == parser.lower():
-@@ -206,7 +206,7 @@ def get_preprocessed_nl_sections(all_nl_sections, parser):
-                 break
- 
-     if not mixed_lang:
--        logging.error("No PARSER_MIXED_LINE_COMB exist")
-+        logging.error('No PARSER_MIXED_LINE_COMB exist')
-         raise SystemExit(2)
- 
-     preprocessed_nl_section_index = 1
-@@ -217,8 +217,8 @@ def get_preprocessed_nl_sections(all_nl_sections, parser):
- 
-         nl_section = all_nl_sections[index]
-         mixed_lang_section, num_mixed_nl_sections = is_mixed_lang_section(
--                                                  all_nl_sections[index:],
--                                                  nl_section_to_check=nl_section)
-+                                            all_nl_sections[index:],
-+                                            nl_section_to_check=nl_section)
-         if mixed_lang_section:
-             mixed_nl_section = deepcopy(nl_section)
-             mixed_nl_section.start.column = None
-@@ -291,8 +291,8 @@ def (hello):
-     # For now this string works for the combination of Python and Jinja
-     # When more language support is added, You can use `if` statements to
-     # use the proper prefix
--    start_marker_prefix = "# Start Nl Section: "
--    end_marker_prefix = "# End Nl Section: "
-+    start_marker_prefix = '# Start Nl Section: '
-+    end_marker_prefix = '# End Nl Section: '
- 
-     # Store the count of number of lines have been added.
-     added_lines = 0
 diff --git a/tests/nestedlib/NlCliParsingTest.py b/tests/nestedlib/NlCliParsingTest.py
 new file mode 100755
 index 000000000..e5fc4f735
@@ -4142,71 +4106,11 @@ index 000000000..e5fc4f735
 +        with self.assertRaisesRegex(SystemExit, '2') as cm:
 +            check_conflicts(sections)
 +            self.assertEqual(cm.exception.code, 2)
-diff --git a/tests/nestedlib/NlFileHandlerTest.py b/tests/nestedlib/NlFileHandlerTest.py
-index c4ca26092..e6862f188 100755
---- a/tests/nestedlib/NlFileHandlerTest.py
-+++ b/tests/nestedlib/NlFileHandlerTest.py
-@@ -189,9 +189,9 @@ def test_coala_setup_template(self):
-             '\n',
-             '# Start Nl Section: 3\n',
-             '{% endblock %}\n',
--            "{% set min_python_version = " +
-+            '{% set min_python_version = ' +
-             "min_python_version|default('2.6') %}\n",
--            "{% set min_python_version = " +
-+            '{% set min_python_version = ' +
-             "min_python_version.split('.', 2) %}\n",
-             '\n',
-             '{% block header %}\n',
-@@ -283,7 +283,7 @@ def test_coala_setup_template(self):
-             '\n',
-             '# Start Nl Section: 29\n',
-             "{% if not entry_points or 'console_scripts' " +
--            "not in entry_points %}\n",
-+            'not in entry_points %}\n',
-             '# End Nl Section: 29\n',
-             '\n',
-             '# Start Nl Section: 31\n',
-diff --git a/tests/nestedlib/NlInfoExtractorTest.py b/tests/nestedlib/NlInfoExtractorTest.py
-index 026f717ce..3a7efa666 100755
---- a/tests/nestedlib/NlInfoExtractorTest.py
-+++ b/tests/nestedlib/NlInfoExtractorTest.py
-@@ -16,13 +16,13 @@ class NlInfoExtractor(unittest.TestCase):
- 
-     def setUp(self):
-         self.arg_parser = default_arg_parser()
--        self.test_dir_path = os.path.abspath(__file__ + "/../..")
--        self.test_bear_path = os.path.join(self.test_dir_path, "test_bears")
-+        self.test_dir_path = os.path.abspath(__file__ + '/../..')
-+        self.test_bear_path = os.path.join(self.test_dir_path, 'test_bears')
-         # Both the upper case and lower case is supported in `languages`
-         # argument
-         self.args = self.arg_parser.parse_args([
--                                    '-f', 'test.py.jj2,test2.py.jj2',
--                                    '-b',
-+                                '-f', 'test.py.jj2,test2.py.jj2',
-+                                '-b',
-                                 'PEP8TestBear,Jinja2TestBear,LineCountTestBear',
-                                 '--handle-nested', '--languages',
-                                 'PYTHON,Jinja2',
-@@ -54,9 +54,9 @@ def test_check_lang_support(self):
-                 check_lang_support(lang_list)
-                 self.assertRegex(
-                     cm.output[0],
--                    "The language combination are not supported. "
--                    "Please check if the languages are provided with"
--                    "the correct names")
-+                    'The language combination are not supported. '
-+                    'Please check if the languages are provided with'
-+                    'the correct names')
- 
-         uut_lang_list = ['PYTHON', 'JiNjA2']
-         check_lang_support(uut_lang_list)
 
-From 04404d6785b2a56881ee5a6b56e69a3d9fae6082 Mon Sep 17 00:00:00 2001
+From 40a179f56455b9f870a5edb14ab864092af66744 Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Thu, 22 Aug 2019 00:31:13 +0530
-Subject: [PATCH 12/19] NlCore: Add NlCore
+Date: Mon, 26 Aug 2019 08:13:00 +0530
+Subject: [PATCH 12/18] NlCore: Add NlCore
 
 This PR adds NlCore
 
@@ -4222,18 +4126,18 @@ The coverage was failing for `test_apply_patches_to_nl_file` because
 shutil was not being to find the file. This PR mocks the
 `write_patches_to_orig_nl_file` function of NlCore.
 ---
- coalib/nestedlib/NlCore.py    | 359 ++++++++++++++++++++++++++++++++++
- tests/nestedlib/NlCoreTest.py | 298 ++++++++++++++++++++++++++++
- 2 files changed, 657 insertions(+)
+ coalib/nestedlib/NlCore.py    | 348 ++++++++++++++++++++++++++++++++++
+ tests/nestedlib/NlCoreTest.py | 298 +++++++++++++++++++++++++++++
+ 2 files changed, 646 insertions(+)
  create mode 100755 coalib/nestedlib/NlCore.py
  create mode 100755 tests/nestedlib/NlCoreTest.py
 
 diff --git a/coalib/nestedlib/NlCore.py b/coalib/nestedlib/NlCore.py
 new file mode 100755
-index 000000000..f530eecfa
+index 000000000..34a759b2b
 --- /dev/null
 +++ b/coalib/nestedlib/NlCore.py
-@@ -0,0 +1,359 @@
+@@ -0,0 +1,348 @@
 +from coalib.nestedlib.NlInfoExtractor import generate_arg_list
 +from coalib.parsing.DefaultArgParser import default_arg_parser
 +from coalib.nestedlib.NlCliParsing import parse_nl_cli
@@ -4267,7 +4171,7 @@ index 000000000..f530eecfa
 +    parser_module_string = ('coalib.nestedlib.parsers.' + parser_name)
 +    try:
 +        parser = getattr(import_module(parser_module_string), parser_name)
-+    except ModuleNotFoundError:
++    except ImportError:
 +        logging.error('No Parser found for the languages combination')
 +        raise SystemExit(2)
 +
@@ -4327,22 +4231,23 @@ index 000000000..f530eecfa
 +
 +    nl_file_dicts looks something like this:
 +
-+    ```
-+    {
-+        'cli_nl_section: test.py_nl_python':
-+            {'test.py_nl_python': ['!!! Start Nl Section: 1\n', '\n', '\n',
-+                                    'def hello():\n', '\n', '\n',
-+                                    '!!! End Nl Section: 1\n', '\n', '\n',
-+                                  ]},
-+
-+        'cli_nl_section: test.py_nl_jinja2':
-+            {'test.py_nl_jinja2': ['\n',
-+                                   '!!! Start Nl Section: 2\n',
-+                                   '    {{ x }} asdasd {{ Asd }}\n',
-+                                   '!!! End Nl Section: 2\n',
-+                                   ]},
-+    }
-+    ```
++    >>> nl_file_dicts =  {
++    ...     'cli_nl_section: test.py_nl_python':
++    ...         {'test.py_nl_python': ['!!! Start Nl Section: 1\\n',
++    ...                                '\\n', '\\n',
++    ...                                'def hello():\\n',
++    ...                                '\\n', '\\n',
++    ...                                '!!! End Nl Section: 1\\n',
++    ...                                '\\n', '\\n',
++    ...                               ]},
++    ...
++    ...     'cli_nl_section: test.py_nl_jinja2':
++    ...         {'test.py_nl_jinja2': ['\\n',
++    ...                                '!!! Start Nl Section: 2\\n',
++    ...                                '    {{ x }} asdasd {{ Asd }}\\n',
++    ...                                '!!! End Nl Section: 2\\n',
++    ...                                ]},
++    ... }
 +    """
 +    temp_file_content = {}
 +    for nl_coala_section, temp_file in nl_file_dicts.items():
@@ -4369,18 +4274,14 @@ index 000000000..f530eecfa
 +    For eg:
 +
 +    Input -
-+    ```
-+    ['!!! Start Nl Section: 1\n', '\n', '\n',
-+    'def hello():\n',
-+    '!!! End Nl Section: 1\n', '\n',
-+    ]
-+    ```
++
++    >>> input_list = ['!!! Start Nl Section: 1\\n', '\\n', '\\n',
++    ...               'def hello():\\n',
++    ...               '!!! End Nl Section: 1\\n', '\\n',
++    ...              ]
 +
 +    The output we receive is:
-+    ```
-+    {1: ['\n', '\n', def hello():\n', '\n']}
-+    ```
-+
++    >>> output = {1: ['\\n', '\\n', 'def hello():\\n', '\\n']}
 +    """
 +    section_index_lines_dict = {}
 +    section_index = None
@@ -4420,25 +4321,26 @@ index 000000000..f530eecfa
 +
 +    Something like:
 +
-+    {'test.py': {
-+                    1: [ 'def hello(): \n' ] ,
-+                    2: [  '\n', '\n'],
-+                    3: [ '    {{ x }} asdasd {{ Asd }}\n ],
-+                    4: [ '{{ x }}\n']
-+                }
-+    }
++    >>> linted_file_sections =  {'test.py': {
++    ...                                   1:['def hello(): \\n'] ,
++    ...                                   2:['\\n', '\\n'],
++    ...                                   3:['    {{ x }} asdasd {{ Asd }}\\n'],
++    ...                                   4:['{{ x }}\\n']
++    ...                         }
++    ... }
 +
++    nl_info_dict looks something like:
++    >>> nl_info_dict = {    'test.py' : {
++    ...                                     'python' : 'test.py_nl_python',
++    ...                                     'jinja2' : 'test.py_nl_jinja2'
++    ...                                 },
++    ...
++    ...                     'test2.py': {
++    ...                                     'python' : 'test2.py_nl_python',
++    ...                                     'jinja2' : 'test2.py_nl_jinja2'
++    ...                                 }
++    ...                }
 +
-+    nl_info_dict = { 'test.py' : {
-+                                        'python' : 'test.py_nl_python',
-+                                        'jinja2' : 'test.py_nl_jinja2'
-+                                 },
-+
-+                      'test2.py': {
-+                                        'python' : 'test2.py_nl_python',
-+                                        'jinja2' : 'test2.py_nl_jinja2'
-+                                  }
-+                   }
 +    """
 +
 +    file_dicts = {}
@@ -4471,34 +4373,35 @@ index 000000000..f530eecfa
 +    all the sections and generate the actual linted file.
 +
 +    Linted file looks like:
-+    {'test.py': {
-+                    1: [ 'def hello(): \n' ] ,
-+                    2: [  '\n', '\n'],
-+                    3: [ '    {{ x }} asdasd {{ Asd }}\n ],
-+                    4: [ '{{ x }}\n']
-+                },
-+     'test2.py':{
-+                    1: ['print("Hello Homosapiens")'],
-+                    2: ['{% set x = {{var}} %}']
-+                }
-+    }
++
++    >>> linted_file = { 'test.py': {
++    ...                              1:['def hello(): \\n'],
++    ...                              2:['\\n', '\\n'],
++    ...                              3:['    {{ x }} asdasd {{ Asd }}\\n'],
++    ...                              4:['{{ x }}\\n']
++    ...                            },
++    ...                'test2.py': {
++    ...                              1:['print("Hello Homosapiens")'],
++    ...                              2:['{% set x = {{var}} %}']
++    ...                             }
++    ... }
++
 +
 +    The sections are sorted according to their index and their content
 +    are combined to make one list. This list will then be written into a file.
 +
-+    {'test.py':  [ 'def hello(): \n',
-+                   '\n',
-+                   '\n',
-+                   '    {{ x }} asdasd {{ Asd }}\n ,
-+                   '{{ x }}\n'
-+                 ],
-+
-+     'test2.py': [ 'print("Hello Homosapiens")',
-+                   '{% set x = {{var}} %}'
-+                 ]
-+
-+    }
-+
++    >>> file_list_to_return = {
++    ...                        'test.py':  ['def hello(): \\n',
++    ...                                     '\\n',
++    ...                                     '\\n',
++    ...                                     '    {{ x }} asdasd {{ Asd }}\\n',
++    ...                                     '{{ x }}\\n'],
++    ...
++    ...                        'test2.py': ['print("Hello Homosapiens")',
++    ...                                    '{% set x = {{var}} %}']
++    ...
++    ...
++    ...                      }
 +    """
 +    linted_file_dict = {}
 +    linted_file_sections = get_linted_file_sections(
@@ -4551,11 +4454,11 @@ index 000000000..f530eecfa
 +                             arg_list=None, nl_info_dict=None,
 +                             arg_parser=None):
 +    """
-+    :param nl_file_dicts: The linted nested language file dict
-+    :param sections     : The coala nl sections
-+    :param args         : The args passed in via CLI
-+    :parma arg_list     : The arg_list that contains precompiled args
-+    :param nl_info_dict : The dicitionary which contains the info of
++    :param nl_file_dicts: The linted nested language file dict.
++    :param sections:      The coala nl sections.
++    :param args:          The args passed in via CLI.
++    :parma arg_list:      The arg_list that contains precompiled args
++    :param nl_info_dict:  The dicitionary which contains the info of
 +                          the original file name as the key and the
 +                          value as the information about the temporary
 +                          file and the language.
@@ -4568,16 +4471,6 @@ index 000000000..f530eecfa
 +
 +    We can use the generate_arg_list function to get more information about
 +    the original file and temporary file.
-+    'nl_file_info': {   'test.py' : {
-+                                        'python' : 'test.py_nl_python',
-+                                        'jinja2' : 'test.py_nl_jinja2'
-+                                    },
-+
-+                        'test2.py': {
-+                                        'python' : 'test2.py_nl_python',
-+                                        'jinja2' : 'test2.py_nl_jinja2'
-+                                    }
-+                    }
 +    """
 +
 +    if args is None:
@@ -4898,10 +4791,10 @@ index 000000000..18f1750d2
 +            self.assertEqual(expected_linted_file_dict,
 +                             linted_file_dict)
 
-From 8f45c52ae199ad7dbd08b37c67a809243b2d06d8 Mon Sep 17 00:00:00 2001
+From b4c754773986f6909801d9093e284a522d2305ba Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Thu, 22 Aug 2019 00:58:32 +0530
-Subject: [PATCH 13/19] coala_main: Add NestedLanguage Support
+Date: Mon, 26 Aug 2019 08:14:00 +0530
+Subject: [PATCH 13/18] coala_main: Add NestedLanguage Support
 
 This PR adds the support for nested language mode.
 The patches selected by the user in nested language
@@ -4991,7 +4884,7 @@ index 5c4cdcf54..61118f020
 diff --git a/tests/coalaTest.py b/tests/coalaTest.py
 old mode 100644
 new mode 100755
-index 5b43b1ae4..7aa516bd8
+index 5b43b1ae4..56472a110
 --- a/tests/coalaTest.py
 +++ b/tests/coalaTest.py
 @@ -14,6 +14,7 @@
@@ -5014,7 +4907,7 @@ index 5b43b1ae4..7aa516bd8
 +            os.path.dirname(__file__),
 +            'processes/section_executor_test_files'))
 +
-+        testcode_p_path = os.path.join(config_path, 'test.py')
++        testcode_p_path = os.path.join(config_path, 'test.py.txt')
 +        uut_arg_list = [
 +                        '--no-config', '--handle-nested',
 +                        '--bears=PEP8TestBear,Jinja2TestBear',
@@ -5032,10 +4925,10 @@ index 5b43b1ae4..7aa516bd8
 +                            'coala must return nonzero when '
 +                            'errors occured')
 
-From 42a8470e1da5861b859e98e8cd2209a709e41c77 Mon Sep 17 00:00:00 2001
+From 2f7085ec425b582183ba91e1c212f96e90e223d2 Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Thu, 22 Aug 2019 01:13:42 +0530
-Subject: [PATCH 14/19] ConsoleInteraction: Add support for Nested langs
+Date: Mon, 26 Aug 2019 08:15:00 +0530
+Subject: [PATCH 14/18] ConsoleInteraction: Add support for Nested langs
 
 This PR adds the support for nested languages mode in
 ConsoleInteraction.py. The function have been updated
@@ -5376,10 +5269,10 @@ index 2ff1290b3..570271454
          action = TestAction()
          args = [self.console_printer, Section(''),
 
-From 41114bda053d34590592230eeeccd9953f43847e Mon Sep 17 00:00:00 2001
+From a611b34ffcc73adb880f85a78b4b5da7243bcee9 Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Thu, 22 Aug 2019 01:23:30 +0530
-Subject: [PATCH 15/19] Processing.py: Add Support for Nested lang mode
+Date: Mon, 26 Aug 2019 08:16:00 +0530
+Subject: [PATCH 15/18] Processing.py: Add Support for Nested lang mode
 
 This PR adds the support for nested language mode. It
 allows creation of new nl_sections when the Nested language
@@ -5391,13 +5284,13 @@ instead of fetching it from the physical file.
 ---
  coalib/processes/Processing.py                | 83 ++++++++++++++-----
  tests/processes/ProcessingTest.py             | 34 +++++++-
- .../section_executor_test_files/test.py       |  2 +
  .../test.py.jj2.txt                           | 12 +++
+ .../section_executor_test_files/test.py.txt   |  2 +
  4 files changed, 109 insertions(+), 22 deletions(-)
  mode change 100644 => 100755 coalib/processes/Processing.py
  mode change 100644 => 100755 tests/processes/ProcessingTest.py
- create mode 100755 tests/processes/section_executor_test_files/test.py
  create mode 100755 tests/processes/section_executor_test_files/test.py.jj2.txt
+ create mode 100755 tests/processes/section_executor_test_files/test.py.txt
 
 diff --git a/coalib/processes/Processing.py b/coalib/processes/Processing.py
 old mode 100644
@@ -5627,14 +5520,6 @@ index d84dbab40..16e6af374
          self.assertEqual(yielded, True)
          self.assertEqual(yielded_unfixed, True)
          self.assertEqual(len(all_results), 2)
-diff --git a/tests/processes/section_executor_test_files/test.py b/tests/processes/section_executor_test_files/test.py
-new file mode 100755
-index 000000000..550558f66
---- /dev/null
-+++ b/tests/processes/section_executor_test_files/test.py
-@@ -0,0 +1,2 @@
-+def sample_file():
-+	print("No Lint Errors")
 diff --git a/tests/processes/section_executor_test_files/test.py.jj2.txt b/tests/processes/section_executor_test_files/test.py.jj2.txt
 new file mode 100755
 index 000000000..36b3c9c7b
@@ -5653,11 +5538,19 @@ index 000000000..36b3c9c7b
 +{% endif %}{# if x in y #}
 +
 +{% if x is True %} x = 20 {{  }} y = 30 {% if x is True %}
+diff --git a/tests/processes/section_executor_test_files/test.py.txt b/tests/processes/section_executor_test_files/test.py.txt
+new file mode 100755
+index 000000000..550558f66
+--- /dev/null
++++ b/tests/processes/section_executor_test_files/test.py.txt
+@@ -0,0 +1,2 @@
++def sample_file():
++	print("No Lint Errors")
 
-From e8488e55a581d21bc4b14c800f865f44719044ba Mon Sep 17 00:00:00 2001
+From 77953ddf928d00c9f100cfeeb3a5957c791ef328 Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Thu, 22 Aug 2019 01:35:08 +0530
-Subject: [PATCH 16/19] ConfigurationGathering: Add Nested Language mode
+Date: Mon, 26 Aug 2019 08:17:00 +0530
+Subject: [PATCH 16/18] ConfigurationGathering: Add Nested Language mode
 
 This PR adds the support for the nested Language mode
 in Configuration Gathering. Parse the cli arguments passed
@@ -5864,10 +5757,10 @@ index 010e6aa3e..15ef69914
              local_bears,
              global_bears,
 
-From 5c4e058b4221ee8256881fc0d3f95f5d72ec7f1c Mon Sep 17 00:00:00 2001
+From d7a2f15faf0bbfcbdd461bf1bcbbe1c0ff2acb6e Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Thu, 22 Aug 2019 01:54:42 +0530
-Subject: [PATCH 17/19] result_action: Add Nested Lang support
+Date: Mon, 26 Aug 2019 08:18:00 +0530
+Subject: [PATCH 17/18] result_action: Add Nested Lang support
 
 The ResultAction and the various actions for result
 is updated to support Nested Language mode. The API
@@ -6227,10 +6120,10 @@ index 2b0c0ae02..aeb6930dc
 +            # do not write to the file whenever a patch is applied.
 +            self.assertEqual(nl_file_dict, expected_file_dict)
 
-From adaad1bdb6960ba8bd0099fb72cc27aecfd63ad3 Mon Sep 17 00:00:00 2001
+From 38c455203c21f8f2bcfeb486cb20a1749a2d5117 Mon Sep 17 00:00:00 2001
 From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Thu, 22 Aug 2019 01:57:24 +0530
-Subject: [PATCH 18/19] nestedlib/test_files: Add sample files for testing
+Date: Mon, 26 Aug 2019 08:19:00 +0530
+Subject: [PATCH 18/18] nestedlib/test_files: Add sample files for testing
 
 ---
  tests/nestedlib/test-files/test.py.txt | 2 ++
@@ -6245,36 +6138,3 @@ index 000000000..4d2286702
 @@ -0,0 +1,2 @@
 +print("Hello Thanos")
 +{% set x = {{var}} %}
-
-From 9cebbf6be530a3230cc3e9889ad1b711313412da Mon Sep 17 00:00:00 2001
-From: Naveenaidu <naveennaidu479@gmail.com>
-Date: Thu, 22 Aug 2019 17:21:09 +0530
-Subject: [PATCH 19/19] Fix the coverage
-
-Rename a test file in `section_executor_test_files/test.py`
-to `test.py.txt`. Having a `py` extension makes pytest
-import the module when it shouldn't. This PR fixes it.
----
- tests/coalaTest.py                                              | 2 +-
- .../section_executor_test_files/{test.py => test.py.txt}        | 0
- 2 files changed, 1 insertion(+), 1 deletion(-)
- rename tests/processes/section_executor_test_files/{test.py => test.py.txt} (100%)
-
-diff --git a/tests/coalaTest.py b/tests/coalaTest.py
-index 7aa516bd8..56472a110 100755
---- a/tests/coalaTest.py
-+++ b/tests/coalaTest.py
-@@ -425,7 +425,7 @@ def test_nested_language_run_coala(self):
-             os.path.dirname(__file__),
-             'processes/section_executor_test_files'))
- 
--        testcode_p_path = os.path.join(config_path, 'test.py')
-+        testcode_p_path = os.path.join(config_path, 'test.py.txt')
-         uut_arg_list = [
-                         '--no-config', '--handle-nested',
-                         '--bears=PEP8TestBear,Jinja2TestBear',
-diff --git a/tests/processes/section_executor_test_files/test.py b/tests/processes/section_executor_test_files/test.py.txt
-similarity index 100%
-rename from tests/processes/section_executor_test_files/test.py
-rename to tests/processes/section_executor_test_files/test.py.txt
-
